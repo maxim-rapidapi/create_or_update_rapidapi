@@ -44,11 +44,11 @@ def already_exists(name, c):
         }
     }
     res = c.execute(search_for_api, variable_values=json.dumps(params))
-    l = res["apis"]["nodes"]
-    if len(l) == 0:
+    nodes = res["apis"]["nodes"]
+    if len(nodes) == 0:
         return None
-    elif len(l) == 1:
-        return l.pop()["id"]
+    elif len(nodes) == 1:
+        return nodes.pop()["id"]
     else:
         print("Error: more than one API found by this name. That should not happen")
         sys.exit(1)
@@ -127,7 +127,8 @@ def create_new_listing(my_file, name, description, c):
                 }
             ]
         }
-        res = c.execute(create_api_listing, variable_values=params, upload_files=True)
+        res = c.execute(create_api_listing, variable_values=params,
+                        upload_files=True)
         return res["createApisFromSpecs"][0]["apiId"]
 
 
@@ -171,7 +172,8 @@ def update_api_version(spec_path, api_version_id, c):
                 }
             ]
         }
-        res = c.execute(update_api_version, variable_values=params, upload_files=True)
+        res = c.execute(update_api_version, variable_values=params,
+                        upload_files=True)
         return res["updateApisFromSpecs"][0]["apiId"]
 
 
@@ -190,7 +192,8 @@ def create_or_update():
         headers["x-rapidapi-identity-key"] = x_rapidapi_identity_key
 
     # setting up connection to GraphQL PAPI
-    graphql_url = os.getenv("INPUT_GRAPHQL_URL", default="https://graphql-platform.p.rapidapi.com/")
+    graphql_url = os.getenv("INPUT_GRAPHQL_URL",
+                            default="https://graphql-platform.p.rapidapi.com/")
     transport = AIOHTTPTransport(url=graphql_url, headers=headers)
     client = Client(transport=transport, fetch_schema_from_transport=False)
 
@@ -206,7 +209,8 @@ def create_or_update():
     api_id = already_exists(api_name, client)
     if api_id is None:
         print("This is a new API, creating a new listing...")
-        new_id = create_new_listing(spec_path, api_name, api_description, client)
+        new_id = create_new_listing(spec_path, api_name,
+                                    api_description, client)
         print(f"New API created with id: {new_id}")
         print(f"Grabbing id of newly created version")
         current_version = get_current_api_version(new_id, client)
@@ -225,15 +229,16 @@ def create_or_update():
 
         if spec_is_newer:
             print(f"Creating new api version for api {api_id}")
-            api_version_id = create_api_version(parsed_spec_version, api_id, client)
+            api_version_id = create_api_version(parsed_spec_version,
+                                                api_id, client)
             print(f"New api version id: {api_version_id}")
             update_api_version(spec_path, api_version_id, client)
             print(f"Setting new version as current")
             set_created_version_as_active(api_version_id, client)
             print(f"::set-output name=api_id::{api_id}")
-            print(f"::set-output name=api_version_id::{current_version}")
+            print(f"::set-output name=api_version_id::{api_version_id}")
         else:
-            print("Uploaded spec is not newer than the existing current version.")
+            print("Uploaded spec is not newer than the current version.")
             sys.exit(1)
 
 
