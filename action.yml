@@ -1,13 +1,24 @@
-name: "Python Container Action Template"
-description: "Get started with Python Container actions"
-author: "Jacob Tomlinson"
+name: "Create or update API listing on RapidAPI Hub"
+description: "Use this action to create a new API listing on RapidAPI or update an existing one"
+author: "Maxim Burgerhout"
 inputs:
-  myInput:
-    description: "Input to use"
-    default: "world"
+  x_rapidapi_key:
+    description: "The value for the x-rapidapi-key header"
+    required: true
+  x_rapidapi_host:
+    description: "The value for the x-rapidapi-host header"
+    required: true
+  spec_path:
+    description: "Path to the OpenAPI spec file"
+    required: true
+  graphql_url:
+    description: "URL of the RapidAPI GraphQL Platform API"
+    default: https://graphql-platform.p.rapidapi.com
 outputs:
-  myOutput:
-    description: "Output from the action"
+  api_id:
+    description: "The id of the created or updated API"
+  api_version_id:
+    description: "The id of the newly created API version"
 runs:
   using: "docker"
   image: "Dockerfile"
