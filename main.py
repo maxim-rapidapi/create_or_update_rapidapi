@@ -50,7 +50,7 @@ def already_exists(name, c):
     elif len(nodes) == 1:
         return nodes.pop()["id"]
     else:
-        print("Error: more than one API found by this name. That should not happen")
+        print("Error: more than one API found. That should not happen")
         sys.exit(1)
 
 
@@ -212,7 +212,7 @@ def create_or_update():
         new_id = create_new_listing(spec_path, api_name,
                                     api_description, client)
         print(f"New API created with id: {new_id}")
-        print(f"Grabbing id of newly created version")
+        print("Grabbing id of newly created version")
         current_version = get_current_api_version(new_id, client)
 
         print(f"::set-output name=api_id::{new_id}")
@@ -233,7 +233,7 @@ def create_or_update():
                                                 api_id, client)
             print(f"New api version id: {api_version_id}")
             update_api_version(spec_path, api_version_id, client)
-            print(f"Setting new version as current")
+            print("Setting new version as current")
             set_created_version_as_active(api_version_id, client)
             print(f"::set-output name=api_id::{api_id}")
             print(f"::set-output name=api_version_id::{api_version_id}")
