@@ -1,5 +1,7 @@
 import json
 import os
+
+import requests
 import semver
 import sys
 
@@ -105,31 +107,40 @@ def get_current_version(versions):
     return next(v["name"] for v in versions if v["current"] is True)
 
 
-def create_new_listing(my_file, name, description, c):
-    create_api_listing = gql(
-        """
-        mutation createApisFromSpecs($creations: [ApiCreateFromSpecInput!]!) {
-          createApisFromSpecs(creations: $creations) {
-            apiId
-          }
-        }
-        """
-    )
-    with open(my_file, "rb") as oas:
-        params = {
-            "creations": [
-                {
-                    "spec": oas,
-                    "specType": "OPENAPI",
-                    "category": "Utility APIs",
-                    "name": name,
-                    "description": description
-                }
-            ]
-        }
-        res = c.execute(create_api_listing, variable_values=params,
-                        upload_files=True)
-        return res["createApisFromSpecs"][0]["apiId"]
+def create_new_listing(my_file, name=None, description=None, c=None):
+    # create_api_listing = gql(
+    #     """
+    #     mutation createApisFromSpecs($creations: [ApiCreateFromSpecInput!]!) {
+    #       createApisFromSpecs(creations: $creations) {
+    #         apiId
+    #       }
+    #     }
+    #     """
+    # )
+    headers = {
+        "x-rapidapi-key": os.getenv("INPUT_X_RAPIDAPI_KEY"),
+        "x-rapidapi-host": os.getenv("INPUT_X_RAPIDAPI_REST_HOST")
+    }
+    url = "https://platformapi.p.rapidapi.com/v1/apis/rapidapi-file"
+    files = {'file': open(my_file, 'rb')}
+
+    response = requests.request("POST", url, files=files, headers=headers)
+    return response.json()["apiId"]
+
+        # params = {
+        #     "creations": [
+        #         {
+        #             "spec": oas,
+        #             "specType": "OPENAPI",
+        #             "category": "Utility APIs",
+        #             "name": name,
+        #             "description": description
+        #         }
+        #     ]
+        # }
+        # res = c.execute(create_api_listing, variable_values=params,
+        #                 upload_files=True)
+        # return res["createApisFromSpecs"][0]["apiId"]
 
 
 def create_api_version(version_name, api_id, c):
@@ -152,30 +163,39 @@ def create_api_version(version_name, api_id, c):
     return res["createApiVersions"][0]["id"]
 
 
-def update_api_version(spec_path, api_version_id, c):
-    update_api_version = gql(
-        """
-        mutation updateApisFromSpecs($updates: [ApiUpdateFromSpecInput!]!) {
-            updateApisFromSpecs(updates: $updates) {
-                apiId
-            }
-        }
-        """
-    )
-    with open(spec_path, "rb") as oas:
-        params = {
-            "updates": [
-                {
-                    "spec": oas,
-                    "specType": "OPENAPI",
-                    "apiVersionId": api_version_id
-                }
-            ]
-        }
-        res = c.execute(update_api_version, variable_values=params,
-                        upload_files=True)
-        return res["updateApisFromSpecs"][0]["apiId"]
+def update_api_version(spec_path, api_id, api_version_id, c=None):
+    # update_api_version = gql(
+    #     """
+    #     mutation updateApisFromSpecs($updates: [ApiUpdateFromSpecInput!]!) {
+    #         updateApisFromSpecs(updates: $updates) {
+    #             apiId
+    #         }
+    #     }
+    #     """
+    # )
+    # with open(spec_path, "rb") as oas:
+    #     params = {
+    #         "updates": [
+    #             {
+    #                 "spec": oas,
+    #                 "specType": "OPENAPI",
+    #                 "apiVersionId": api_version_id
+    #             }
+    #         ]
+    #     }
+    #     res = c.execute(update_api_version, variable_values=params,
+    #                     upload_files=True)
+    #     return res["updateApisFromSpecs"][0]["apiId"]
 
+    headers = {
+        "x-rapidapi-key": os.getenv("INPUT_X_RAPIDAPI_KEY"),
+        "x-rapidapi-host": os.getenv("INPUT_X_RAPIDAPI_REST_HOST")
+    }
+    url = f"https://platformapi.p.rapidapi.com/v1/apis/rapidapi-file/{api_id}/versions/{api_version_id}"
+    files = {'file': open(spec_path, 'rb')}
+
+    response = requests.request("PUT", url, files=files, headers=headers)
+    print(response.json())
 
 def create_or_update():
     """
@@ -232,7 +252,7 @@ def create_or_update():
             api_version_id = create_api_version(parsed_spec_version,
                                                 api_id, client)
             print(f"New api version id: {api_version_id}")
-            update_api_version(spec_path, api_version_id, client)
+            update_api_version(spec_path, api_id, api_version_id, client)
             print("Setting new version as current")
             set_created_version_as_active(api_version_id, client)
             print(f"::set-output name=api_id::{api_id}")
