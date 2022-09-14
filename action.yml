@@ -8,6 +8,12 @@ inputs:
   x_rapidapi_host:
     description: "The value for the x-rapidapi-host header"
     required: true
+  x_rapidapi_identity_key:
+    description: "The value for the x-rapidapi-identity-key header"
+    required: false
+  x_rapidapi_rest_host:
+    description: "The value for the x-rapidapi-host header for the rest papi"
+    required: true
   spec_path:
     description: "Path to the OpenAPI spec file"
     required: true
