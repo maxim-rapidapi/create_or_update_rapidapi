@@ -53,7 +53,7 @@ jobs:
 | `spec_path`  | Path to the OpenAPI spec file in JSON format | True |
 | `owner_id`  | The ID of the owning entity of an API on the Hub. This can be either a user ID or a team ID. | True |
 | `x_rapidapi_key`  | API key for the user / the team that will own this API on the Hub | True |
-| `x_rapidapi_host`  | GraphQL platform API host for the user / the team that will own this API on the Hub (e.g. `graphql-platform.yourhub.rapidapi.com`) | True |
+| `x_rapidapi_graphql_host`  | GraphQL platform API host for the user / the team that will own this API on the Hub (e.g. `graphql-platform.yourhub.rapidapi.com`) | True |
 | `x_rapidapi_rest_host`  | REST platform API host for the user / the team that will own this API on the Hub (e.g. `platform.yourhub.rapidapi.com`) | True |
 | `x_rapidapi_identity_key`  | API identity key for the user / the team that will own this API on the Hub | False |
 | `graphql_url` | The URL to the GraphQL Platform API, defaults to `https://graphql-platform.p.rapidapi.com/` (mind the slash!) | False |

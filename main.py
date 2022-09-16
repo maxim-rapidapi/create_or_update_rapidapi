@@ -152,8 +152,7 @@ def create_new_listing(my_file, c=None):
         "x-rapidapi-key": os.getenv("INPUT_X_RAPIDAPI_KEY"),
         "x-rapidapi-host": os.getenv("INPUT_X_RAPIDAPI_REST_HOST")
     }
-    url = os.getenv("INPUT_REST_URL",
-                    default="https://platformapi.p.rapidapi.com/")
+    url = os.getenv("INPUT_REST_URL", "https://platformapi.p.rapidapi.com/")
     url = f"{url}v1/apis/rapidapi-file"
     files = {'file': open(my_file, 'rb')}
 
@@ -249,8 +248,7 @@ def create_or_update():
 
     # Verifying environment variables
     x_rapidapi_key = needenv("INPUT_X_RAPIDAPI_KEY")
-    x_rapidapi_identity_key = os.getenv("INPUT_X_RAPIDAPI_KEY",
-                                        default=x_rapidapi_key)
+    x_rapidapi_identity_key = os.getenv("INPUT_X_RAPIDAPI_KEY", x_rapidapi_key)
     x_rapidapi_graphql_host = needenv("INPUT_X_RAPIDAPI_GRAPHQL_HOST")
     # won't explicitly use this, only in the context of creating APIs and API
     #  versions, but want to check whether it exists before we create things
@@ -267,7 +265,7 @@ def create_or_update():
 
     # setting up connection to GraphQL PAPI
     graphql_url = os.getenv("INPUT_GRAPHQL_URL",
-                            default="https://graphql-platform.p.rapidapi.com/")
+                            "https://graphql-platform.p.rapidapi.com/")
     transport = AIOHTTPTransport(url=graphql_url, headers=headers)
     client = Client(transport=transport, fetch_schema_from_transport=False)
 
