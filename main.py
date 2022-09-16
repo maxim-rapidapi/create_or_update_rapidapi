@@ -298,8 +298,8 @@ def create_or_update():
         print("This is a new API, creating a new listing...")
         new_id = create_new_listing(spec_path, client)
         print(f"New API created with id: {new_id}")
-        print("Grabbing id of newly created version")
         current_version = get_current_api_version(new_id, client)
+        print("Initial version id: {current_version}")
 
         print(f"::set-output name=api_id::{new_id}")
         print(f"::set-output name=api_version_name::{current_version[0]}")
