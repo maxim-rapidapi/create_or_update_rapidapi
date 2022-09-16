@@ -268,6 +268,7 @@ def create_or_update():
     # setting up connection to GraphQL PAPI
     graphql_url = os.getenv("INPUT_GRAPHQL_URL",
                             "https://graphql-platform.p.rapidapi.com/")
+    print(graphql_url)
     transport = AIOHTTPTransport(url=graphql_url, headers=headers)
     client = Client(transport=transport, fetch_schema_from_transport=False)
 
