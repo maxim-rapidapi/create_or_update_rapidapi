@@ -13,7 +13,7 @@ from gql.transport.aiohttp import AIOHTTPTransport
 def needenv(name):
     """Check if required environment variables exist"""
     var = os.getenv(name)
-    if var is None:
+    if var is None or var == "":
         sys.exit(f"The environment variable {name} is required.")
     return var
 
@@ -57,7 +57,7 @@ def already_exists(name, owner_id, c):
     params = {
         "where": {
             "name": name,
-            "ownerId": owner_id
+            "ownerId": int(owner_id)
         }
     }
     res = c.execute(search_for_api, variable_values=json.dumps(params))
@@ -155,7 +155,11 @@ def create_new_listing(my_file, c=None):
         "x-rapidapi-host": os.getenv("INPUT_X_RAPIDAPI_REST_HOST")
     }
 
-    url = os.getenv("INPUT_REST_URL", "https://platform.p.rapidapi.com/")
+    # Weird syntax to work around GitHub Actions issue #924
+    url = os.getenv("INPUT_REST_URL")
+    if url == "" or url is None:
+        url = "https://platform.p.rapidapi.com/"
+
     url = f"{url}v1/apis/rapidapi-file"
     files = {'file': open(my_file, 'rb')}
 
@@ -234,8 +238,11 @@ def update_api_version(spec_path, api_id, api_version_id, c=None):
         "x-rapidapi-key": needenv("INPUT_X_RAPIDAPI_KEY"),
         "x-rapidapi-host": needenv("INPUT_X_RAPIDAPI_REST_HOST")
     }
-    url = os.getenv("INPUT_REST_URL",
-                    default="https://platform.p.rapidapi.com/")
+    # Weird syntax to work around GitHub Actions issue #924
+    url = os.getenv("INPUT_REST_URL")
+    if url == "":
+        url = "https://platform.p.rapidapi.com/"
+
     url = f"{url}v1/apis/rapidapi-file/" + \
           f"{api_id}/versions/{api_version_id}"
     files = {'file': open(spec_path, 'rb')}
@@ -250,7 +257,12 @@ def create_or_update():
 
     # Verifying environment variables
     x_rapidapi_key = needenv("INPUT_X_RAPIDAPI_KEY")
-    x_rapidapi_identity_key = os.getenv("INPUT_X_RAPIDAPI_KEY", x_rapidapi_key)
+
+    # Weird syntax to work around GitHub Actions issue #924
+    x_rapidapi_identity_key = os.getenv("INPUT_X_RAPIDAPI_KEY")
+    if x_rapidapi_identity_key == "":
+        x_rapidapi_identity_key = x_rapidapi_key
+
     x_rapidapi_graphql_host = needenv("INPUT_X_RAPIDAPI_GRAPHQL_HOST")
     # won't explicitly use this, only in the context of creating APIs and API
     #  versions, but want to check whether it exists before we create things
@@ -266,8 +278,11 @@ def create_or_update():
     }
 
     # setting up connection to GraphQL PAPI
-    graphql_url = os.getenv("INPUT_GRAPHQL_URL",
-                            "https://graphql-platform.p.rapidapi.com/")
+    # Weird syntax to work around GitHub Actions issue #924
+    graphql_url = os.getenv("INPUT_GRAPHQL_URL")
+    if graphql_url == "" or graphql_url is None:
+        graphql_url = "https://graphql-platform.p.rapidapi.com/"
+
     transport = AIOHTTPTransport(url=graphql_url, headers=headers)
     client = Client(transport=transport, fetch_schema_from_transport=False)
 
