@@ -1,85 +1,121 @@
-# Python Container Action Template
+# Create or update an API on RapidAPI Hub
 
-[![Action Template](https://img.shields.io/badge/Action%20Template-Python%20Container%20Action-blue.svg?colorA=24292e&colorB=0366d6&style=flat&longCache=true&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAM6wAADOsB5dZE0gAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAERSURBVCiRhZG/SsMxFEZPfsVJ61jbxaF0cRQRcRJ9hlYn30IHN/+9iquDCOIsblIrOjqKgy5aKoJQj4O3EEtbPwhJbr6Te28CmdSKeqzeqr0YbfVIrTBKakvtOl5dtTkK+v4HfA9PEyBFCY9AGVgCBLaBp1jPAyfAJ/AAdIEG0dNAiyP7+K1qIfMdonZic6+WJoBJvQlvuwDqcXadUuqPA1NKAlexbRTAIMvMOCjTbMwl1LtI/6KWJ5Q6rT6Ht1MA58AX8Apcqqt5r2qhrgAXQC3CZ6i1+KMd9TRu3MvA3aH/fFPnBodb6oe6HM8+lYHrGdRXW8M9bMZtPXUji69lmf5Cmamq7quNLFZXD9Rq7v0Bpc1o/tp0fisAAAAASUVORK5CYII=)](https://github.com/jacobtomlinson/python-container-action)
-[![Actions Status](https://github.com/jacobtomlinson/python-container-action/workflows/Lint/badge.svg)](https://github.com/jacobtomlinson/python-container-action/actions)
-[![Actions Status](https://github.com/jacobtomlinson/python-container-action/workflows/Integration%20Test/badge.svg)](https://github.com/jacobtomlinson/python-container-action/actions)
+[![Action Template](https://img.shields.io/badge/Create%20or%20update%20an%20API%20on%20RapidAPI%20Hub-blue.svg?colorA=24292e&colorB=0366d6&style=flat&longCache=true&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAM6wAADOsB5dZE0gAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAERSURBVCiRhZG/SsMxFEZPfsVJ61jbxaF0cRQRcRJ9hlYn30IHN/+9iquDCOIsblIrOjqKgy5aKoJQj4O3EEtbPwhJbr6Te28CmdSKeqzeqr0YbfVIrTBKakvtOl5dtTkK+v4HfA9PEyBFCY9AGVgCBLaBp1jPAyfAJ/AAdIEG0dNAiyP7+K1qIfMdonZic6+WJoBJvQlvuwDqcXadUuqPA1NKAlexbRTAIMvMOCjTbMwl1LtI/6KWJ5Q6rT6Ht1MA58AX8Apcqqt5r2qhrgAXQC3CZ6i1+KMd9TRu3MvA3aH/fFPnBodb6oe6HM8+lYHrGdRXW8M9bMZtPXUji69lmf5Cmamq7quNLFZXD9Rq7v0Bpc1o/tp0fisAAAAASUVORK5CYII=)](https://github.com/rapidapi/create-or-update-rapidapi)
+[![Actions Status](https://github.com/maxim-rapidapi/create_or_update_rapidapi/workflows/Lint/badge.svg)](https://github.com/maxim-rapidapi/create_or_update_rapidapi/actions)
+[![Actions Status](https://github.com/maxim-rapidapi/create_or_update_rapidapi/workflows/Integration%20Test/badge.svg)](https://github.com/maxim-rapidapi/create_or_update_rapidapi/actions)
 
-This is a template for creating GitHub actions and contains a small Python application which will be built into a minimal [Container Action](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-a-docker-container-action). Our final container from this template is ~50MB, yours may be a little bigger once you add some code. If you want something smaller check out my [go-container-action template](https://github.com/jacobtomlinson/go-container-action/actions).
+This is a preview release of a GitHub action designed to make it easy to onboard
+new APIs onto RapidAPI Hub or Enterprise Hub, or create new versions of existing
+APIs. It uses the RapidAPI Platform API to upload an OpenAPI spec file and
+returns the ID of the new API, as well as the ID of the newly created API
+version.
 
-In `main.py` you will find a small example of accessing Action inputs and returning Action outputs. For more information on communicating with the workflow see the [development tools for GitHub Actions](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/development-tools-for-github-actions).
-
-> 🏁 To get started, click the `Use this template` button on this repository [which will create a new repository based on this template](https://github.blog/2019-06-06-generate-new-repositories-with-repository-templates/).
+This action is based on Jacob Tomlinson's excellent [template
+repository](https://github.com/jacobtomlinson/python-container-action) for
+Python based GitHub actions.
 
 ## Usage
 
-Describe how to use your action here.
+The action needs an OpenAPI spec file in JSON formrat to exist in the repo. The
+name of this file (or path to it, if it is in a directory), needs to be fed to
+the action by setting the `spec_path` environment variable. 
+
+### Requirements 
+If you are a RapidAPI Enterprise Hub user, you need both the REST Platform API
+as well as the preview of the GraphQL Platform API enabled in your Hub. You will
+need credentials (the `x-rapidapi-key` and `x-rapidapi-host` headers) of a user
+or team that is enabled to use both of these APIs.
 
 ### Example workflow
 
 ```yaml
-name: My Workflow
-on: [push, pull_request]
+name: My API Workflow
+on: push
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - name: Run action
-
-      # Put your action repo here
-      uses: me/myaction@master
-
-      # Put an example of your mandatory inputs here
+    - name: Upload OAS to RapidAPI Hub for processing
+      uses: maxim-rapidapi/create_or_update_rapidapi@v1
       with:
-        myInput: world
+        spec_path: openapi.json
+        owner_id: 12345678
+        x_rapidapi_host: graphql-platform.yourhub.rapidapi.com
+        x_rapidapi_key: a-very-long-api-key
+        x_rapidapi_rest_host: platform.yourhub.rapidapi.com
 ```
 
 ### Inputs
 
-| Input                                             | Description                                        |
-|------------------------------------------------------|-----------------------------------------------|
-| `myInput`  | An example mandatory input    |
-| `anotherInput` _(optional)_  | An example optional input    |
+| Input                                             | Description                                        | Required |
+|------------------------------------------------------|-----------------------------------------------|-----------|
+| `spec_path`  | Path to the OpenAPI spec file in JSON format | True |
+| `owner_id`  | The ID of the owning entity of an API on the Hub. This can be either a user ID or a team ID. | True |
+| `x_rapidapi_key`  | API key for the user / the team that will own this API on the Hub | True |
+| `x_rapidapi_host`  | GraphQL platform API host for the user / the team that will own this API on the Hub (e.g. `graphql-platform.yourhub.rapidapi.com`) | True |
+| `x_rapidapi_rest_host`  | REST platform API host for the user / the team that will own this API on the Hub (e.g. `platform.yourhub.rapidapi.com`) | True |
+| `x_rapidapi_identity_key`  | API identity key for the user / the team that will own this API on the Hub | False |
+| `graphql_url` | The URL to the GraphQL Platform API, defaults to `https://graphql-platform.p.rapidapi.com/` (mind the slash!) | False |
+| `rest_url` | The URL to the REST Platform API, defaults to `https://platformapi.p.rapidapi.com/` (mind the slash!) | False |
 
 ### Outputs
 
 | Output                                             | Description                                        |
 |------------------------------------------------------|-----------------------------------------------|
-| `myOutput`  | An example output (returns 'Hello world')    |
-
-## Examples
-
-> NOTE: People ❤️ cut and paste examples. Be generous with them!
+| `api_id`  | The ID of the newly created or updated API on the RapidAPI Hub |
+| `api_version_id`  | The ID of the newly created API version on the RapidAPI Hub |
 
 ### Using the optional input
 
 This is how to use the optional input.
 
 ```yaml
-with:
-  myInput: world
-  anotherInput: optional
+name: My API Workflow
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Upload OAS to RapidAPI Hub for processing
+      uses: maxim-rapidapi/create_or_update_rapidapi@v1
+      with:
+        spec_path: openapi.json
+        owner_id: 12345678
+        x_rapidapi_host: graphql-platform.yourhub.rapidapi.com
+        x_rapidapi_key: a-very-secure-api-key
+        x_rapidapi_identity_key: another-very-secure-api-key
+        x_rapidapi_rest_host: platform.yourhub.rapidapi.com
+        x_rapidapi_rest_url: https://restpapi.p.rapidapi.com/
+        x_rapidapi_graphql_url: https://graphql-papi.p.rapidapi.com/
 ```
 
 ### Using outputs
 
-Show people how to use your outputs in another action.
+The outputs of this action (`api_id` and `api_version_id`) can be used as input
+to subsequent actions:
 
 ```yaml
 steps:
 - uses: actions/checkout@master
-- name: Run action
-  id: myaction
-
-  # Put your action name here
-  uses: me/myaction@master
-
-  # Put an example of your mandatory arguments here
+- name: Upload OAS to RapidAPI Hub for processing
+  id: rapidapi-upload
+  uses: maxim-rapidapi/creat_or_update_rapidapi@v1
   with:
-    myInput: world
+    spec_path: openapi.json
+    [...]
 
-# Put an example of using your outputs here
 - name: Check outputs
     run: |
-    echo "Outputs - ${{ steps.myaction.outputs.myOutput }}"
+    echo "New API ID - ${{ steps.rapidapi-upload.outputs.api_id }}"
+    echo "New API Version ID - ${{ steps.rapidapi-upload.outputs.api_version_id }}"
 ```
+
+### Limitations
+Eventually, this action will only call the GraphQL Platform API. For the time
+being, it needs to call both, which is why you need to provide both the
+`x_rapidapi_rest_host` and `x_rapidapi_host` variables.
+
+Using the `on-behalf-of` header is currently not supported. This only impacts
+the API calls for the creation of new APIs and new API versions.

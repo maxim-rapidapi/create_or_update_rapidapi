@@ -5,7 +5,7 @@ inputs:
   x_rapidapi_key:
     description: "The value for the x-rapidapi-key header"
     required: true
-  x_rapidapi_host:
+  x_rapidapi_graphql_host:
     description: "The value for the x-rapidapi-host header"
     required: true
   x_rapidapi_identity_key:
@@ -17,9 +17,15 @@ inputs:
   spec_path:
     description: "Path to the OpenAPI spec file"
     required: true
+  owner_id:
+    description: "The RapidAPI ID of the user / team owning this API"
+    required: true
   graphql_url:
-    description: "URL of the RapidAPI GraphQL Platform API"
-    default: https://graphql-platform.p.rapidapi.com
+    description: "The URL to the GraphQL Platform API if non-standard"
+    required: false
+  rest_url:
+    description: "The URL to the REST Platform API if non-standard"
+    required: false
 outputs:
   api_id:
     description: "The id of the created or updated API"
