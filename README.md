@@ -37,7 +37,7 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - name: Upload OAS to RapidAPI Hub for processing
-      uses: maxim-rapidapi/create_or_update_rapidapi@v1
+      uses: maxim-rapidapi/create_or_update_rapidapi@v0
       with:
         spec_path: openapi.json
         owner_id: 12345678
@@ -80,7 +80,7 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - name: Upload OAS to RapidAPI Hub for processing
-      uses: maxim-rapidapi/create_or_update_rapidapi@v1
+      uses: maxim-rapidapi/create_or_update_rapidapi@v0
       with:
         spec_path: openapi.json
         owner_id: 12345678
@@ -102,7 +102,7 @@ steps:
 - uses: actions/checkout@master
 - name: Upload OAS to RapidAPI Hub for processing
   id: rapidapi-upload
-  uses: maxim-rapidapi/creat_or_update_rapidapi@v1
+  uses: maxim-rapidapi/creat_or_update_rapidapi@v0
   with:
     spec_path: openapi.json
     [...]
