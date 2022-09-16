@@ -129,7 +129,9 @@ def get_current_version(versions):
     """
     Takes a list of API versions and returns only the one set as "current"
     """
-    return next(v["name"] for v in versions if v["current"] is True)
+    name = next(v["name"] for v in versions if v["current"] is True)
+    version_id = next(v["id"] for v in versions if v["current"] is True)
+    return (name, version_id)
 
 
 def create_new_listing(my_file, c=None):
@@ -152,7 +154,8 @@ def create_new_listing(my_file, c=None):
         "x-rapidapi-key": os.getenv("INPUT_X_RAPIDAPI_KEY"),
         "x-rapidapi-host": os.getenv("INPUT_X_RAPIDAPI_REST_HOST")
     }
-    url = os.getenv("INPUT_REST_URL", "https://platformapi.p.rapidapi.com/")
+
+    url = os.getenv("INPUT_REST_URL", "https://platform.p.rapidapi.com/")
     url = f"{url}v1/apis/rapidapi-file"
     files = {'file': open(my_file, 'rb')}
 
@@ -232,13 +235,12 @@ def update_api_version(spec_path, api_id, api_version_id, c=None):
         "x-rapidapi-host": needenv("INPUT_X_RAPIDAPI_REST_HOST")
     }
     url = os.getenv("INPUT_REST_URL",
-                    default="https://platformapi.p.rapidapi.com/")
+                    default="https://platform.p.rapidapi.com/")
     url = f"{url}v1/apis/rapidapi-file/" + \
           f"{api_id}/versions/{api_version_id}"
     files = {'file': open(spec_path, 'rb')}
 
-    response = requests.request("PUT", url, files=files, headers=headers)
-    print(response.json())
+    requests.request("PUT", url, files=files, headers=headers)
 
 
 def create_or_update():
@@ -285,12 +287,13 @@ def create_or_update():
         current_version = get_current_api_version(new_id, client)
 
         print(f"::set-output name=api_id::{new_id}")
-        print(f"::set-output name=api_version_id::{current_version}")
+        print(f"::set-output name=api_version_name::{current_version[0]}")
+        print(f"::set-output name=api_version_id::{current_version[1]}")
     else:
         print(f"API already exists with id: {api_id}")
         current_version = get_current_api_version(api_id, client)
         parsed_spec_version = semver.VersionInfo.parse(spec_version)
-        parsed_current_version = semver.VersionInfo.parse(current_version)
+        parsed_current_version = semver.VersionInfo.parse(current_version[0])
         print(f"parsed spec version: {parsed_spec_version}")
         print(f"current version: {parsed_current_version}")
         spec_is_newer = parsed_spec_version > parsed_current_version
@@ -305,6 +308,7 @@ def create_or_update():
             print("Setting new version as current")
             set_created_version_as_active(api_version_id, client)
             print(f"::set-output name=api_id::{api_id}")
+            print(f"::set-output name=api_version_name::{parsed_spec_version}")
             print(f"::set-output name=api_version_id::{api_version_id}")
         else:
             print("Uploaded spec is not newer than the current version.")

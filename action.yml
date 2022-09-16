@@ -29,6 +29,8 @@ inputs:
 outputs:
   api_id:
     description: "The id of the created or updated API"
+  api_version_name:
+    description: "The name of the newly created API version"
   api_version_id:
     description: "The id of the newly created API version"
 runs:
