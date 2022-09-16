@@ -9,12 +9,14 @@ import sys
 from gql import gql, Client
 from gql.transport.aiohttp import AIOHTTPTransport
 
+
 def needenv(name):
     """Check if required environment variables exist"""
     var = os.getenv(name)
     if var is None:
         sys.exit(f"The environment variable {name} is required.")
     return var
+
 
 def read_spec(oas):
     """Return JSON string containing spec contents"""
@@ -151,7 +153,7 @@ def create_new_listing(my_file, c=None):
         "x-rapidapi-host": os.getenv("INPUT_X_RAPIDAPI_REST_HOST")
     }
     url = os.getenv("INPUT_REST_URL",
-                            default="https://platformapi.p.rapidapi.com/")
+                    default="https://platformapi.p.rapidapi.com/")
     url = f"{url}v1/apis/rapidapi-file"
     files = {'file': open(my_file, 'rb')}
 
@@ -231,7 +233,7 @@ def update_api_version(spec_path, api_id, api_version_id, c=None):
         "x-rapidapi-host": needenv("INPUT_X_RAPIDAPI_REST_HOST")
     }
     url = os.getenv("INPUT_REST_URL",
-                            default="https://platformapi.p.rapidapi.com/")
+                    default="https://platformapi.p.rapidapi.com/")
     url = f"{url}v1/apis/rapidapi-file/" + \
           f"{api_id}/versions/{api_version_id}"
     files = {'file': open(spec_path, 'rb')}
@@ -252,7 +254,7 @@ def create_or_update():
     x_rapidapi_graphql_host = needenv("INPUT_X_RAPIDAPI_GRAPHQL_HOST")
     # won't explicitly use this, only in the context of creating APIs and API
     #  versions, but want to check whether it exists before we create things
-    _x_rapidapi_rest_host = needenv("INPUT_X_RAPIDAPI_REST_HOST")
+    _x_rapidapi_rest_host = needenv("INPUT_X_RAPIDAPI_REST_HOST")  # noqa: F841
     rapidapi_owner_id = needenv("INPUT_OWNER_ID")
     spec_path = needenv("INPUT_SPEC_PATH")
 
